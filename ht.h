@@ -484,6 +484,7 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
 			}
 			else {
 				insert(newTable[i]->item);
+				delete newTable[i];
 			}
 		}
 	}
