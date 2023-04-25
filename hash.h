@@ -19,16 +19,74 @@ struct MyStringHash {
     // hash function entry point (i.e. this is h(k))
     HASH_INDEX_T operator()(const std::string& k) const
     {
-        // Add your code here
+				size_t length = k.size();
+				// array to hold (sub)string of 6 "letters"
+				unsigned long long values[5];
+				// stores first "letter" starting from the back;
+				// decrements when iterate to next letter 
+				size_t arrayIndex = 4;
+				// runs for each element in array 
+				for (size_t i = 4; i >= 0; i--) {
+					// substring to hold content 
+					std::string sub;
+					// if not enough letters to fill current index of array,
+					// set element to 0 and move on to next index,
+					// if index is 0, break
+					if (length <= 0) {
+						values[arrayIndex] = 0;
+						if (arrayIndex == 0) {
+							break;
+						}
+						arrayIndex--;
+						continue;
+					}
+					// creates substring from orig. string to add
+					// to current index 
+					else if (length <= 6) {
+						sub = k.substr(0, length);
+					}
+					else {
+						sub = k.substr(length - 6, 6);
+					}
+					// decrease used letters from string running length 
+					length -= sub.size();
+					// holds key to be entered as array value 
+					unsigned long long key = 0;
+					// calculates power of 36 according to formula 
+					int power = 5 - (6 - sub.size());
+					// calculates given formula and stores key in 
+					// index of array 
+					for (size_t i = 0; i < sub.size(); i++) {
+						key += pow(36, power) * letterDigitToNumber(sub[i]);
+						power--;
+					}
+					values[arrayIndex] = key;
+					arrayIndex--;
+				}
 
-
+				HASH_INDEX_T result = 0;
+				for (size_t i = 0; i < 5; i++) {
+					result += rValues[i] * values[i];
+				}
+				return result;
     }
 
     // A likely helper function is to convert a-z,0-9 to an integral value 0-35
     HASH_INDEX_T letterDigitToNumber(char letter) const
     {
-        // Add code here or delete this helper function if you do not want it
+        // converts letters to numbers according
+				// to ASCII chart 
+				if (letter >= 65 && letter <= 90) {
+					letter += 32;
+				}
 
+				if (letter >= 97 && letter <= 122) {
+					return letter - 97;
+				}
+
+				if (letter >= 48 && letter <= 57) {
+					return letter - 22;
+				}
     }
 
     // Code to generate the random R values
