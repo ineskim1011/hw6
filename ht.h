@@ -364,7 +364,10 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 	if (find(p.first)) {
 		table_[probe(p.first)]->item.second = p.second;
 	}
-	
+	  // if no space is available, throw logic error 
+	else if (probe(p.first) == npos) {
+		throw std::logic_error("No location available to insert item.");
+	}
     // if key does not exist and space is available, 
     // allocate new HashItem and insert into table;
     // also increment data members for sizing 
@@ -372,11 +375,6 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 		table_[probe(p.first)] = new HashItem(p);
 		numElements_++;
 		totalElements_++;
-	}
-
-    // if no space is available, throw logic error 
-	else if (this->probe(p.first) == npos) {
-		throw std::logic_error("No location available to insert item.");
 	}
 }
 
@@ -474,7 +472,6 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
 	std::vector<HashItem*> newTable(CAPACITIES[mIndex_], NULL);
 	// swap tables (newTable is data member & official table)
     table_.swap(newTable);
-
     // delete old elements if deleted previously, 
     // and insert existing elements into new table
 	for (size_t i = 0; i < newTable.size(); i++) {
