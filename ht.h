@@ -375,7 +375,7 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
 	}
 
     // if no space is available, throw logic error 
-	else {
+	else if (this->probe(p.first) == npos) {
 		throw std::logic_error("No location available to insert item.");
 	}
 }
